@@ -55,4 +55,5 @@ public class UserService {
                 .map(User::getUsername)
                 .orElseThrow(() -> new EmptyResultException("User not found with id: " + userId));
     }
+
 }

@@ -71,4 +71,6 @@ public class AuthController {
         userService.updateUserPassword(dto, userId);
         return ResponseEntity.ok("User password updated successfully");
     }
+
+
 }

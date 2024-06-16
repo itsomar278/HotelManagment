@@ -10,7 +10,6 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Mapper
@@ -51,5 +50,4 @@ public interface BookingMapper {
     @Mapping(target = "user.id", source = "userId")
     void updateBookingFromDTO(BookingDTO bookingDTO, @MappingTarget Booking booking);
 
-    // MAP DTO TO ENTITY
 }

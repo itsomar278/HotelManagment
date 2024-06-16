@@ -1,11 +1,12 @@
 package Omar.HotelWebServer.dataAccess.model.classes;
 
-
+import Omar.HotelWebServer.dataAccess.model.enums.TaskStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -28,6 +29,11 @@ public class HousekeepingTask {
     @JoinColumn(name = "room_id")
     private Room room;
 
+    @NotNull
+    @Column(name = "task_status")
+    @Enumerated(EnumType.STRING)
+    private TaskStatus taskStatus;
+
     @ManyToMany
     @JoinTable(
             name = "housekeeping_employee_tasks",
@@ -35,4 +41,13 @@ public class HousekeepingTask {
             inverseJoinColumns = @JoinColumn(name = "employee_id")
     )
     private Set<Employee> assignedEmployees;
+
+    public Set<Employee> getAssignedEmployees() {
+        if (assignedEmployees == null) {
+            assignedEmployees = new HashSet<>();
+        }
+        return assignedEmployees;
+    }
+
+    // Other getters and setters
 }

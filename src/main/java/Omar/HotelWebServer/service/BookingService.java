@@ -7,6 +7,7 @@ import Omar.HotelWebServer.dataAccess.model.classes.User;
 import Omar.HotelWebServer.dataAccess.model.enums.BookingStatus;
 import Omar.HotelWebServer.dataAccess.model.enums.PaymentMethod;
 import Omar.HotelWebServer.dataAccess.model.enums.PaymentStatus;
+import Omar.HotelWebServer.dataAccess.model.enums.RoomStatus;
 import Omar.HotelWebServer.dataAccess.repository.BookingRepository;
 import Omar.HotelWebServer.dataAccess.repository.RoomRepository;
 import Omar.HotelWebServer.dataAccess.repository.UserRepository;
@@ -48,6 +49,10 @@ public class BookingService {
         if (!isRoomAvailable(roomId, startDate, endDate)) {
             throw new WrongInputException("Room with id " + roomId + " is not available in the specified date range.");
         }
+        if(startDate.isAfter(endDate)) {
+            throw new WrongInputException("Start date cannot be after end date.");
+        }
+
 
         // Map BookingDTO to Booking entity
         Booking booking = new Booking();
@@ -145,6 +150,12 @@ public class BookingService {
     public BookingDTO checkIn(CheckInDTO checkInDTO) {
         Booking booking = bookingRepository.findById(checkInDTO.getBookingId())
                 .orElseThrow(() -> new EmptyResultException("Booking not found with id: " + checkInDTO.getBookingId()));
+        if(booking.getStatus() == BookingStatus.CHECKED_IN) {
+            throw new WrongInputException("Booking is already checked in.");
+        }
+        if(booking.getRoom().getStatus() == RoomStatus.NEEDS_CLEANING) {
+            throw new WrongInputException("Room needs cleaning before check-in.");
+        }
         booking.setStatus(BookingStatus.CHECKED_IN);
         booking.getPayment().setPaymentStatus(PaymentStatus.COMPLETED);
         bookingRepository.save(booking);
@@ -169,4 +180,30 @@ public class BookingService {
         return booking.getUser().getUsername();
     }
 
+    public String checkOut(Integer bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new EmptyResultException("Booking not found with id: " + bookingId));
+        if(booking.getStatus() == BookingStatus.CHECKED_OUT) {
+            throw new WrongInputException("Booking is already checked out.");
+        }
+        booking.setStatus(BookingStatus.CHECKED_OUT);
+        booking.getRoom().setStatus(RoomStatus.NEEDS_CLEANING);
+        bookingRepository.save(booking);
+        return "Checked out successfully";
+    }
+
+    public void cancelBooking(Integer bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new EmptyResultException("Booking not found with id: " + bookingId));
+        if(booking.getStatus() == BookingStatus.CANCELED) {
+            throw new WrongInputException("Booking is already cancelled.");
+        }
+        if(booking.getStatus() == BookingStatus.CHECKED_IN) {
+            throw new WrongInputException("Cannot cancel a checked-in booking.");
+        }
+        booking.setStatus(BookingStatus.CANCELED);
+        booking.getRoom().setStatus(RoomStatus.AVAILABLE);
+        bookingRepository.save(booking);
+    }
 }
+

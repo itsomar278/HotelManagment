@@ -1,7 +1,6 @@
 package Omar.HotelWebServer.utils.exceptions.handler;
 
 
-import Omar.HotelWebServer.utils.DTOs.ExceptionResponse;
 import Omar.HotelWebServer.utils.exceptions.EmptyResultException;
 import Omar.HotelWebServer.utils.exceptions.NotAuthorizedException;
 import Omar.HotelWebServer.utils.exceptions.ResourceExistsException;

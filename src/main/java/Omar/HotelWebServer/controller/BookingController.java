@@ -9,6 +9,7 @@ import Omar.HotelWebServer.utils.DTOs.BookingDateRangeDTO;
 import Omar.HotelWebServer.utils.DTOs.BookingHistoryDTO;
 import Omar.HotelWebServer.utils.DTOs.CheckInDTO;
 import Omar.HotelWebServer.utils.exceptions.NotAuthorizedException;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -35,19 +36,44 @@ public class BookingController {
 
     @PostMapping("/create")
     public BookingDTO createBooking(HttpServletRequest request, @RequestBody BookingDTO bookingDTO) {
-        validateUserPermissionById(request, bookingDTO.getUserId());
+        if(!isAdmin(request)){
+            validateUserPermissionById(request, bookingDTO.getUserId());
+        }
         return bookingService.createBooking(bookingDTO);
     }
 
     @PostMapping("/check-in")
     public ResponseEntity<String> checkIn(HttpServletRequest request, @RequestBody CheckInDTO checkInDTO) {
-        validateUserPermissionByBookingId(request, checkInDTO.getBookingId());
-        bookingService.checkIn(checkInDTO);
+        if(!isAdmin(request)) {
+            throw new NotAuthorizedException("User cant check in without an Admin");
+        }
+            bookingService.checkIn(checkInDTO);
         return ResponseEntity.ok("Checked in successfully");
     }
 
+    @PostMapping("/{bookingId}/check-out")
+    public ResponseEntity<String> checkOut(HttpServletRequest request, @PathVariable Integer bookingId){
+        if(!isAdmin(request)){
+            validateUserPermissionByBookingId(request, bookingId);
+        }
+        bookingService.checkOut(bookingId);
+        return ResponseEntity.ok("Checked out successfully");
+    }
+    @PostMapping("/{bookingId}/cancel")
+    public ResponseEntity<String> cancelBooking(HttpServletRequest request, @PathVariable Integer bookingId) {
+        if(!isAdmin(request)) {
+            validateUserPermissionByBookingId(request, bookingId);
+        }
+        bookingService.cancelBooking(bookingId);
+        return ResponseEntity.ok("Booking cancelled successfully");
+    }
+
+
     @GetMapping("/all")
-    public List<BookingDTO> getAllBookings() {
+    public List<BookingDTO> getAllBookings(HttpServletRequest request) {
+        if(!isAdmin(request)){
+            throw  new NotAuthorizedException("User does not have permission to perform this action");
+        }
         return bookingService.getAllBookings();
     }
 
@@ -58,6 +84,9 @@ public class BookingController {
 
     @GetMapping("/history/{userId}")
     public BookingHistoryDTO getBookingHistoryByUserId(HttpServletRequest request, @PathVariable Integer userId) {
+        if(isAdmin(request)){
+            return bookingService.getBookingHistoryByUserId(userId);
+        }
         validateUserPermissionById(request, userId);
         return bookingService.getBookingHistoryByUserId(userId);
     }
@@ -72,8 +101,13 @@ public class BookingController {
     }
 
     @GetMapping("/room/{roomId}")
-    public List<BookingDTO> getRoomBookings(@PathVariable Integer roomId) {
-        return bookingService.getRoomBookings(roomId);
+    public List<BookingDTO> getRoomBookings(HttpServletRequest httpServletRequest,@PathVariable Integer roomId) {
+        if(!isAdmin(httpServletRequest)){
+            throw  new NotAuthorizedException("User does not have permission to perform this action");
+        }
+        else {
+            return bookingService.getRoomBookings(roomId);
+        }
     }
 
     private void validateUserPermissionByBookingId(HttpServletRequest request, Integer bookingId) {
@@ -97,4 +131,11 @@ public class BookingController {
         }
         throw new IllegalArgumentException("Invalid authorization header format");
     }
+    private boolean isAdmin(HttpServletRequest request) {
+        if(request.isUserInRole("ROLE_USER")) {
+            return false;
+        }
+        return true;
+    }
+
 }

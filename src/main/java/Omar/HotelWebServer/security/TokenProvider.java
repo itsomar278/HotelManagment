@@ -57,4 +57,6 @@ public class TokenProvider {
         }
         throw new AuthenticationCredentialsNotFoundException("You need to re-login to get a new token :)");
     }
+
+
 }

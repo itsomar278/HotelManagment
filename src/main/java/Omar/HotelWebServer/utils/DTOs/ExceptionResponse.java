@@ -1,4 +1,4 @@
-package Omar.HotelWebServer.utils.exceptions.handler;
+package Omar.HotelWebServer.utils.DTOs;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

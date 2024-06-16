@@ -1,10 +1,13 @@
-package Omar.HotelWebServer.dataAccess.model;
+package Omar.HotelWebServer.dataAccess.model.classes;
 
 
+import Omar.HotelWebServer.dataAccess.model.enums.UserRoles;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+
+import java.util.Set;
 
 @Entity
 @Data
@@ -30,5 +33,9 @@ public class User {
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private UserRoles role;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<Booking> bookings;
+
 
 }

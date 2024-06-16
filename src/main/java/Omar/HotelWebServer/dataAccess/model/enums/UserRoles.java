@@ -1,4 +1,4 @@
-package Omar.HotelWebServer.dataAccess.model;
+package Omar.HotelWebServer.dataAccess.model.enums;
 
 import org.springframework.security.core.GrantedAuthority;
 

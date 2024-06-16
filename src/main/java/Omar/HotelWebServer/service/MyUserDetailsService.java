@@ -1,8 +1,7 @@
-package Omar.HotelWebServer.security;
+package Omar.HotelWebServer.service;
 
-import Omar.HotelWebServer.dataAccess.model.User;
+import Omar.HotelWebServer.dataAccess.model.classes.User;
 import Omar.HotelWebServer.dataAccess.repository.UserRepository;
-import Omar.HotelWebServer.utils.exceptions.EmptyResultException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

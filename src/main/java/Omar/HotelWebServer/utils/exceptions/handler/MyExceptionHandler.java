@@ -5,6 +5,7 @@ import Omar.HotelWebServer.utils.DTOs.ExceptionResponse;
 import Omar.HotelWebServer.utils.exceptions.EmptyResultException;
 import Omar.HotelWebServer.utils.exceptions.NotAuthorizedException;
 import Omar.HotelWebServer.utils.exceptions.ResourceExistsException;
+import Omar.HotelWebServer.utils.exceptions.WrongInputException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -42,6 +43,16 @@ public class MyExceptionHandler extends ResponseEntityExceptionHandler {
         ResponseEntity<Object> responseEntity = new ResponseEntity<>(exceptionResponse, HttpStatus.UNAUTHORIZED);
         return responseEntity;
     }
+
+    @ExceptionHandler(WrongInputException.class)
+    public ResponseEntity<Object> handleWrongInputData(WrongInputException ex , WebRequest request){
+        ExceptionResponse exceptionResponse = new ExceptionResponse();
+        exceptionResponse.setDateTime(LocalDateTime.now());
+        exceptionResponse.setMessage(ex.getMessage());
+        ResponseEntity<Object> responseEntity = new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+        return responseEntity;
+    }
+
 
 
 }

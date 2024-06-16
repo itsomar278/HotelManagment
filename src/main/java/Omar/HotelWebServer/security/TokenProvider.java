@@ -45,9 +45,9 @@ public class TokenProvider {
                     .parseClaimsJws(token);
             return true;
         } catch (MalformedJwtException e) {
-        System.out.println("Invalid JWT token");
+            System.out.println("Invalid JWT token");
         }  catch (SignatureException e) {
-        System.out.println("Invalid JWT signature");
+            System.out.println("Invalid JWT signature");
         } catch (IllegalArgumentException e) {
             System.out.println("Invalid JWT format");
         } catch (ExpiredJwtException e) {

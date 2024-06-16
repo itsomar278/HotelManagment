@@ -49,4 +49,10 @@ public class UserService {
 
         userRepository.save(user.get());
     }
+
+    public String getUserNameById(Integer userId) {
+        return userRepository.findById(userId)
+                .map(User::getUsername)
+                .orElseThrow(() -> new EmptyResultException("User not found with id: " + userId));
+    }
 }

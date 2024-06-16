@@ -28,7 +28,6 @@ public class Payment {
     @Column(name = "amount")
     private Double amount;
 
-    @NotNull
     @Column(name = "payment_date")
     private LocalDate paymentDate;
 

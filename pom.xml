@@ -85,9 +85,15 @@
 			<version>1.1.1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springdoc</groupId
-			> <artifactId>springdoc-openapistarter-webmvc-ui</artifactId>
-			<version>2.5.0</version>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
+			<version>1.4.2.Final</version> <!-- Replace with the latest version -->
+		</dependency>
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct-processor</artifactId>
+			<version>1.4.2.Final</version> <!-- Replace with the same version as mapstruct -->
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 

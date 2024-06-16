@@ -1,13 +1,11 @@
 package Omar.HotelWebServer.security;
 
-import Omar.HotelWebServer.security.JwtAuthEntryPoint;
-import Omar.HotelWebServer.security.JwtAuthenticationFilter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import Omar.HotelWebServer.service.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -15,52 +13,56 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
-    private JwtAuthEntryPoint jwtAuthEntryPoint;
-    private MyUserDetailsService userDetailsService;
+
+    private final JwtAuthEntryPoint jwtAuthEntryPoint;
+    private final MyUserDetailsService userDetailsService;
+    private final TokenProvider tokenProvider;
 
     @Autowired
-    public SecurityConfiguration(MyUserDetailsService userDetailsService, JwtAuthEntryPoint jwtAuthEntryPoint) {
+    public SecurityConfiguration(MyUserDetailsService userDetailsService, JwtAuthEntryPoint jwtAuthEntryPoint, TokenProvider tokenProvider) {
         this.userDetailsService = userDetailsService;
         this.jwtAuthEntryPoint = jwtAuthEntryPoint;
+        this.tokenProvider = tokenProvider;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
-                .exceptionHandling()
-                .authenticationEntryPoint(jwtAuthEntryPoint)
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeRequests()
-                .requestMatchers("/auth/register","/auth/login","/auth/password/{userId}").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .httpBasic(Customizer.withDefaults());
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(AbstractHttpConfigurer::disable)
+                .exceptionHandling(exceptionHandlingConfigurer ->
+                        exceptionHandlingConfigurer.authenticationEntryPoint(jwtAuthEntryPoint)
+                )
+                .sessionManagement(sessionManagementConfigurer ->
+                        sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .authorizeHttpRequests(authorizeRequestsConfigurer ->
+                        authorizeRequestsConfigurer
+                                .requestMatchers("/auth/register", "/auth/login").permitAll()
+                                .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
-
     @Bean
-    public AuthenticationManager authenticationManager (AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
-    PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter();
+        return new JwtAuthenticationFilter(tokenProvider, userDetailsService);
     }
-
-
 }

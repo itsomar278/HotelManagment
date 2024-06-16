@@ -1,8 +1,6 @@
 package Omar.HotelWebServer.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
@@ -46,8 +44,17 @@ public class TokenProvider {
                     .setSigningKey(DatatypeConverter.parseBase64Binary(jwtSecret))
                     .parseClaimsJws(token);
             return true;
+        } catch (MalformedJwtException e) {
+        System.out.println("Invalid JWT token");
+        }  catch (SignatureException e) {
+        System.out.println("Invalid JWT signature");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid JWT format");
+        } catch (ExpiredJwtException e) {
+            System.out.println("Expired JWT JWT");
         } catch (Exception e) {
-            throw new AuthenticationCredentialsNotFoundException("You need to re-login to get a new token :)", e);
+            System.out.println("Unknown JWT exception occurred"+ e.getMessage());
         }
+        throw new AuthenticationCredentialsNotFoundException("You need to re-login to get a new token :)");
     }
 }

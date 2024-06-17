@@ -1,19 +1,21 @@
 package Omar.HotelWebServer.security;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import Omar.HotelWebServer.service.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
@@ -22,6 +24,14 @@ public class SecurityConfiguration {
     private final JwtAuthEntryPoint jwtAuthEntryPoint;
     private final MyUserDetailsService userDetailsService;
     private final TokenProvider tokenProvider;
+
+    private static final String[] SWAGGER_WHITELIST = {
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-resources/**",
+            "/swagger-ui.html",
+            "/webjars/**"
+    };
 
     @Autowired
     public SecurityConfiguration(MyUserDetailsService userDetailsService, JwtAuthEntryPoint jwtAuthEntryPoint, TokenProvider tokenProvider) {
@@ -43,12 +53,19 @@ public class SecurityConfiguration {
                 )
                 .authorizeHttpRequests(authorizeRequestsConfigurer ->
                         authorizeRequestsConfigurer
-                                .requestMatchers("/auth/register", "/auth/login").permitAll()
+                                .requestMatchers("/auth/register", "/auth/login", "/", "/project/jira/update", "/v3/api-docs", "/swagger-ui.html").permitAll()
+                                .requestMatchers(SWAGGER_WHITELIST).permitAll()
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring()
+                .requestMatchers("/swagger-resources/**", "/webjars/**")
+                .requestMatchers(HttpMethod.OPTIONS, "/**");
     }
 
     @Bean

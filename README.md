@@ -1,6 +1,6 @@
 # HotelWebServer Application
 
-HotelWebServer is a Java Spring Boot application designed to manage various aspects of a hotel, including room booking, employee management, housekeeping tasks, and room inventory.
+HotelWebServer is a Java Spring Boot application designed to manage various aspects of a hotel, including room booking, employee management, housekeeping tasks, and room managment.
 
 ## Functionality
 
@@ -67,7 +67,6 @@ To run the application locally, follow these steps:
       mvn clean package
       java -jar target/HotelWebServer-0.0.1-SNAPSHOT.jar
     ```
-يُرجى استخدام الرمز البرمجي بحذر.
 ## Explore the API:
  - **Access the API documentation and test endpoints using Swagger at http://localhost:8080/swagger-ui.html.**
  - **Detailed API endpoints and functionalities are documented in Swagger UI. Use the Swagger UI to interact with the API endpoints effectively.**

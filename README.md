@@ -60,6 +60,7 @@ To run the application locally, follow these steps:
 
 2. **Set up MySQL Database:**
   1 - Create a MySQL database named hotel_db. You can do this through your MySQL administration tool or command line.
+   
   2 - Configure the database username and password in your application.properties file. This file is typically located in the src/main/resources directory of your project.
    
 4. **Build and Run the Application:**

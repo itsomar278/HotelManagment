@@ -26,7 +26,7 @@ Facilitates:
 ### Housekeeping Task Management
 
 Enables:
-- Assigning rooms to employees for cleaning tasks.
+- Assigning rooms to employees for cleaning tasks automatically based on multiple factors.
 - Marking tasks as finished.
 - Retrieving tasks by employee.
 
